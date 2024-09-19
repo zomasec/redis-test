@@ -1,0 +1,30 @@
+services:
+  redis:
+    image: redis:latest
+    container_name: my_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - my_network
+
+  node-app:
+    build:
+      context: ./node-app
+    container_name: my_node_app
+    depends_on:
+      - redis
+    networks:
+      - my_network
+
+  go-app:
+    build:
+      context: ./go-app
+    container_name: my_go_app
+    depends_on:
+      - redis
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    driver: bridge
