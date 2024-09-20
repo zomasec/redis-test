@@ -36,15 +36,30 @@ func main() {
 	failOnError(err, "Failed to open a channel")
 	defer ch.Close()
 
+	requestQueue := "scan_requests"
+	responseQueue := "scan_responses"
+
+	// Declare request and response queues
 	q, err := ch.QueueDeclare(
-		"scan_requests", // queue name
-		false,           // durable
-		false,           // delete when unused
-		false,           // exclusive
-		false,           // no-wait
-		nil,             // arguments
+		requestQueue, // queue name
+		false,        // durable
+		false,        // delete when unused
+		false,        // exclusive
+		false,        // no-wait
+		nil,          // arguments
 	)
-	failOnError(err, "Failed to declare a queue")
+	failOnError(err, "Failed to declare a request queue")
+
+	// Declare the response queue
+	_, err = ch.QueueDeclare(
+		responseQueue, // queue name
+		false,         // durable
+		false,         // delete when unused
+		false,         // exclusive
+		false,         // no-wait
+		nil,           // arguments
+	)
+	failOnError(err, "Failed to declare a response queue")
 
 	msgs, err := ch.Consume(
 		q.Name, // queue
@@ -61,11 +76,28 @@ func main() {
 
 	go func() {
 		for d := range msgs {
-			log.Printf("Received a message: %s", d.Body)
+			log.Printf("Received a scan request: %s", d.Body)
 			fmt.Println("Processing file scan...")
+
+			// Simulate a scan by sleeping for a few seconds
+			time.Sleep(2 * time.Second)
+
+			// Send response back to the backend every 5 seconds
+			scanResponse := fmt.Sprintf("Scan complete for file: %s", d.Body)
+			err = ch.Publish(
+				"",            // exchange
+				responseQueue, // routing key (queue name)
+				false,         // mandatory
+				false,         // immediate
+				amqp.Publishing{
+					ContentType: "text/plain",
+					Body:        []byte(scanResponse),
+				})
+			failOnError(err, "Failed to publish response")
+			fmt.Println("Sent scan response: ", scanResponse)
 		}
 	}()
 
-	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
+	log.Printf(" [*] Waiting for scan requests. To exit press CTRL+C")
 	<-forever
 }
