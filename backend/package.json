@@ -1,0 +1,31 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "amqplib": "^0.7.1",
+    "bitsyntax": "^0.1.0",
+    "bluebird": "^3.7.2",
+    "buffer-more-ints": "^1.0.0",
+    "core-util-is": "^1.0.3",
+    "debug": "^2.6.9",
+    "inherits": "^2.0.4",
+    "isarray": "^0.0.1",
+    "querystringify": "^2.2.0",
+    "ms": "^2.0.0",
+    "readable-stream": "^1.1.14",
+    "requires-port": "^1.0.0",
+    "safe-buffer": "^5.2.1",
+    "string_decoder": "^0.10.31",
+    "url-parse": "^1.5.10"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
